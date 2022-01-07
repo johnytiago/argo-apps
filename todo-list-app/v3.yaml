@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  namespace: argocd
+  name: todo-list
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/johnytiago/todo-list-app'
+    path: .
+    targetRevision: HEAD
+    plugin:
+      name: setDockerImageTagFromGit
+      # Values that are provided to the custom plugin as env vars
+      env:
+        - name: helm_values
+          value: docker/staging/values.yaml
+        - name: helm_chart
+          value: todo-list
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: staging
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

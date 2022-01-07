@@ -1,0 +1,29 @@
+# This one does work. ✅
+# We now point to towards the application repository where a Chart.yaml points
+# to the service helm chart
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: todo=johnytiago/todo-list-app:0.x
+    argocd-image-updater.argoproj.io/todo.helm.image-name: todo-list.image.name
+    argocd-image-updater.argoproj.io/todo.helm.image-tag: todo-list.image.tag
+    argocd-image-updater.argoproj.io/todo.force-update: "true"
+  namespace: argocd
+  name: todo-list
+spec:
+  destination:
+    namespace: staging
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: .
+    repoURL: https://github.com/johnytiago/todo-list-app
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - docker/staging/values.yaml
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

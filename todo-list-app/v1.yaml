@@ -1,0 +1,23 @@
+# This one wont work.
+# We're pointing to an helm chart repo thus there's no way for argo to track
+# changes in values.yaml in the application repo
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: todo=johnytiago/todo-list-app:0.x
+    argocd-image-updater.argoproj.io/todo.force-update: "true"
+  namespace: argocd
+  name: server
+spec:
+  destination:
+    namespace: staging
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: charts/todo-list
+    repoURL: https://github.com/johnytiago/todo-list-chart
+    targetRevision: HEAD
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
